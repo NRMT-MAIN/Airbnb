@@ -15,4 +15,10 @@ app.use(genericErrorHandler) ;
 app.listen(serverConfig.PORT , () => {
     console.log(`Server is running on Port : ${serverConfig.PORT}`) ; 
     logger.info("To exist , press CTRL + C") ; 
+
+    try {
+
+    } catch(err){
+        
+    }
 })
