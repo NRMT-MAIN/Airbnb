@@ -3,6 +3,7 @@ import { serverConfig } from "./config";
 import v1Router from "./router/v1/index.router";
 import { attachCorrelationIdMiddleware } from "./middleware/correlation.middleware";
 import { appErrorHandeler, genericErrorHandler } from "./middleware/error.middleware";
+import logger from "./config/logger.config";
 
 const app = express() ; 
 
@@ -13,4 +14,5 @@ app.use(genericErrorHandler) ;
 
 app.listen(serverConfig.PORT , () => {
     console.log(`Server is running on Port : ${serverConfig.PORT}`) ; 
+    logger.info("To exist , press CTRL + C") ; 
 })
