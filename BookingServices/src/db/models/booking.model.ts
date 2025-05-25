@@ -1,4 +1,4 @@
-import { CreationOptional, DataTypes, EnumDataType, InferAttributes, InferCreationAttributes, Model } from "sequelize";
+import { CreationOptional, DataTypes, EnumDataType, InferAttributes, InferCreationAttributes, Model, NOW } from "sequelize";
 import sequelize from "./sequelize";
 
 export enum BoookingStatus { 
@@ -11,38 +11,50 @@ class Booking extends Model<InferAttributes<Booking> , InferCreationAttributes<B
     declare id : CreationOptional<number>  ; 
     declare userId : number ; 
     declare hotelId : number ; 
+    declare totalGuest : number ; 
     declare createdAt : CreationOptional<Date> ; 
     declare updatedAt : CreationOptional<Date> ; 
-    declare status : EnumDataType<BoookingStatus>
+    declare status : CreationOptional<String> ;
 }
 
 Booking.init({
         id : {
-            type : "INTEGER" , 
+            type : DataTypes.INTEGER , 
             primaryKey : true ,
             autoIncrement : true 
         } , 
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            field: 'userId'
         },
         hotelId: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            field : 'hotelId'
         },
         status: {
-            type: DataTypes.ENUM(...Object.values(BoookingStatus)),
+            type: DataTypes.STRING,
             allowNull: false,
             defaultValue: BoookingStatus.PENDING 
         },
-        createdAt: DataTypes.DATE,
-        updatedAt: DataTypes.DATE,
+        createdAt : {
+            type :  DataTypes.DATE,
+            defaultValue : NOW
+        } , 
+        updatedAt: {
+            type :  DataTypes.DATE,
+            defaultValue : NOW
+        } , 
+        totalGuest : {
+            type : DataTypes.INTEGER , 
+            allowNull : false
+        }
 
     } ,
     {
         tableName: "Booking",
         sequelize: sequelize,
-        underscored: true, // createdAt --> created_at automatically make this format
         timestamps: true,
     } 
 )
