@@ -1,6 +1,7 @@
+import sequelize from "../db/models/sequelize";
 import { CreateBookingDTO } from "../dto/booking.dto";
 import { confirmBooking, createBooking, createIdompotencyKey, finalizeIdompotencyKey, getIdompotencyKey } from "../repositories/booking.repository";
-import { BadRequestError } from "../utils/Error/app.error";
+import { BadRequestError, InternalSeverError } from "../utils/Error/app.error";
 import { generateIdompotencyKey } from "../utils/Helper/generateIdompotencyKey";
 
 export async function createBookingService(bookingInput : CreateBookingDTO){
@@ -17,14 +18,20 @@ export async function createBookingService(bookingInput : CreateBookingDTO){
 }
 
 export async function confirmBookingService(key : string){
-    const idompotencyKey = await getIdompotencyKey(key) ; 
+    const result = await sequelize.transaction(async (txn) => {
+        const idompotencyKey = await getIdompotencyKey(txn , key) ; 
 
-    if(idompotencyKey.finalizedBooking) {
-        throw new BadRequestError("Idompotency Key already finalized") ; 
+        if(idompotencyKey.finalizedBooking) {
+            throw new BadRequestError("Idompotency Key already finalized") ; 
+        }
+
+        const booking = await confirmBooking(txn , idompotencyKey.bookingId) ; 
+        await finalizeIdompotencyKey(txn , key) ; 
+
+        return booking ; 
+    }) ; 
+
+    if(!result){
+        throw new InternalSeverError("Transactions failed to Complete") ; 
     }
-
-    const booking = await confirmBooking(idompotencyKey.bookingId) ; 
-    await finalizeIdompotencyKey(key) ; 
-
-    return booking ; 
 }

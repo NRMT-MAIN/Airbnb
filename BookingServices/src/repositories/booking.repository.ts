@@ -1,3 +1,4 @@
+import { Transaction } from "sequelize";
 import logger from "../config/logger.config";
 import Booking, { BoookingStatus } from "../db/models/booking.model";
 import IdompotencyKey from "../db/models/idompotencykey.model";
@@ -29,11 +30,13 @@ export async function createIdompotencyKey(bookingId : number , key : string){
     return idompotencyKey ; 
 }
 
-export async function getIdompotencyKey(key : string){
+export async function getIdompotencyKey(txn : Transaction , key : string){
     const idompotencyKey = await IdompotencyKey.findOne({
         where : {
             key
-        } 
+        } , 
+        transaction : txn , 
+        lock : txn.LOCK.UPDATE
     }) ; 
     if(!idompotencyKey){
         logger.error("Idompotency Key not found with :" , key) ; 
@@ -56,22 +59,23 @@ export async function getBookingById(bookingId : number){
     return booking ; 
 }
 
-export async function confirmBooking(bookingId : number){
-    const booking = await Booking.update({
-        status : BoookingStatus.CONFIRMED
-    } , {
-        where : {
-            id : bookingId
-        } , 
-    })
+export async function confirmBooking(txn: Transaction, bookingId: number) {
+    const [affectedCount] = await Booking.update({
+        status: BoookingStatus.CONFIRMED
+    }, {
+        where: {
+            id: bookingId
+        },
+        transaction: txn // Make sure to pass the transaction here
+    });
 
-    if(!booking){
-        logger.error("Booking status not updated yet") ; 
-        throw new Error("Booking status not updated yet") ; 
+    if (affectedCount === 0) {
+        logger.error("Booking status not updated - booking not found");
+        throw new Error("Booking not found or status not updated");
     }
 
-    logger.info("Booking status updated") ; 
-    return bookingId ; 
+    logger.info("Booking status updated successfully");
+    return bookingId;
 }
 
 export async function cancelBooking(bookingId : number){
@@ -92,13 +96,14 @@ export async function cancelBooking(bookingId : number){
     return bookingId ; 
 }
 
-export async function finalizeIdompotencyKey(key : string){
+export async function finalizeIdompotencyKey(txn : Transaction , key : string){
     const idompotencyKey = await IdompotencyKey.update({
         finalizedBooking : true
     } , {
         where : {
             key : key
-        } 
+        } , 
+        transaction : txn
     })
 
     if(!idompotencyKey){
