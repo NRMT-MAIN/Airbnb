@@ -33,3 +33,4 @@ export const dbConfig : DBConfig = {
     DB_NAME: process.env.DB_NAME || 'test_db' , 
     DB_DIALECT : process.env.DB_DIALECT || "mysql"
 }
+
