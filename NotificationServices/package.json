@@ -24,7 +24,9 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.1",
+    "@types/handlebars": "^4.0.40",
     "@types/node": "^22.14.0",
+    "@types/nodemailer": "^6.4.17",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"

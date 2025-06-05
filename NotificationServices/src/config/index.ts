@@ -4,7 +4,9 @@ import dotenv from 'dotenv';
 type ServerConfig = {
     PORT: number , 
     REDIS_HOST: string , 
-    REDIS_PORT: number 
+    REDIS_PORT: number , 
+    MAIL_USER : string , 
+    MAIL_PASS  : string
 }
 
 function loadEnv() {
@@ -17,5 +19,7 @@ loadEnv();
 export const serverConfig: ServerConfig = {
     PORT: Number(process.env.PORT) || 3001 , 
     REDIS_HOST : process.env.REDIS_HOST || "localhost" , 
-    REDIS_PORT : Number(process.env.REDIS_PORT) || 6379
+    REDIS_PORT : Number(process.env.REDIS_PORT) || 6379 , 
+    MAIL_USER : process.env.MAIL_USER || "sample@gmail.com" , 
+    MAIL_PASS : process.env.MAIL_PASS || "samplepass123"
 };

@@ -35,12 +35,12 @@ app.listen(serverConfig.PORT, () => {
     setupMailerWorker() ; 
 
     const sampleNotification : NotificationDTO = {
-        to : "sample" , 
+        to : "nirmitsahu.aitp@gmail.com" , 
         subject : "sample-mail" , 
-        templateId : "sample-templateId" , 
+        templateId : "welcome" , 
         params : {
-            firstName  : "Sample" , 
-            lastName : "Sample"
+            name  : "Nirmit Sahu" , 
+            appName : "AirBnb"
         }
     }
 
