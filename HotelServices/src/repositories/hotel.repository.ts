@@ -1,5 +1,5 @@
 import logger from "../config/logger.config";
-import Hotel from "../db/models/hotel";
+import Hotel from "../db/models/hotel.model";
 import { createHotelDTO, updateHotelDTO } from "../dto/hotel.dto";
 import { NotFoundError } from "../utils/Error/app.error";
 
