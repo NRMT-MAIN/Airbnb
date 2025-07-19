@@ -2,16 +2,14 @@ package main
 
 import (
 	"AuthInGo/app"
+	config "AuthInGo/config/env"
 )
 
 func main(){
-	cfg := app.Config{
-		Addr : ":3000" , 
-	}
+	config.Load() 
 
-	app := app.Application{
-		Config: cfg,
-	}
+	cfg := app.NewConfig()
 
+	app := app.NewApplication(cfg)
 	app.Run() ; 
 }
