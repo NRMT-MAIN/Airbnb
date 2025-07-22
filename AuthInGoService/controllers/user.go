@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"AuthInGo/dtos"
 	"AuthInGo/services"
 	"AuthInGo/utils"
 	"fmt"
@@ -20,33 +21,37 @@ func NewUserController(_userService services.UserService) *UserController{
 func (uc *UserController) GetUserById(w http.ResponseWriter , r *http.Request){
 	fmt.Println("Register User called in User Controller.")
 	userId := r.URL.Query().Get("id")
-	uc.userService.GetUserById(userId)
-	w.Write([]byte("User Registration Endpoint."))
+	user , err := uc.userService.GetUserById(userId)
+
+	if err != nil {
+		fmt.Println("Error in fetching the user" , err)
+		utils.WriteErrorJsonResponse(w , "User Fetching Error" , http.StatusInternalServerError , err)
+		return
+	}
+	
+	utils.WriteSuccessJsonResponse(w , "User Found" , http.StatusFound , user)
 }
 
 func (uc *UserController) Create(w http.ResponseWriter , r *http.Request) {
 	fmt.Println("Register User called in User Controller.")
-	hashPassword , err := utils.HashPassword("nirmit")
-	if err != nil {
-		fmt.Println("Error in getting hashed password")
-	}
-	uc.userService.CreateUser("u_demo1" , "u1@demo.com" , hashPassword)
-	w.Write([]byte("User Registration Endpoint."))
+
+	payload := r.Context().Value("validatedPayload").(dtos.CreateUserRequest)
+	
+	uc.userService.CreateUser(&payload)
+	utils.WriteSuccessJsonResponse(w , "User Sigup Successfull" , http.StatusAccepted , "")
 }
 
 func (uc *UserController) LoginUser(w http.ResponseWriter , r *http.Request){
 	fmt.Println("Login User called in User Controller.")
-	jwtToken , err := uc.userService.LoginUser()
+	 
+	payload := r.Context().Value("validatedPayload").(dtos.LoginUserRequest)
+
+	jwtToken , err := uc.userService.LoginUser(&payload)
 	
 	if err != nil {
-		w.Write([]byte("Something went wrong!"))
+		utils.WriteErrorJsonResponse(w , "Wrong Credentials" , http.StatusNotAcceptable , err)
+		return
 	}
 
-	response := map[string]any{
-		"status" : "sucess" ,
-		"token" : jwtToken ,
-		"error" : nil , 
-	}
-
-	utils.WriteJsonResponse(w , http.StatusAccepted , response)
+	utils.WriteSuccessJsonResponse(w , "User Login Successfull" , http.StatusAccepted , jwtToken)
 }
