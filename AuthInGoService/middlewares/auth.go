@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-func ValidateRequestBody[T any](next http.HandlerFunc)http.HandlerFunc {
-	return func(w http.ResponseWriter , r *http.Request){
+func ValidateRequestBody[T any](next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter , r *http.Request){
 		var payload T
 		if jsonErr := utils.ReadJsonBody(r , &payload) ; jsonErr != nil {
 			utils.WriteErrorJsonResponse(w , "JSON Reading Error" , http.StatusInternalServerError , jsonErr)
@@ -22,6 +22,6 @@ func ValidateRequestBody[T any](next http.HandlerFunc)http.HandlerFunc {
 		
 		ctx := context.WithValue(r.Context() , "validatedPayload" , payload)
 		next.ServeHTTP(w ,r.WithContext(ctx))
-	}
+	})
 }
 

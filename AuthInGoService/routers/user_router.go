@@ -20,6 +20,6 @@ func NewUserRouter(_userController *controllers.UserController) Router {
 
 func (ur *UserRouter) Register(r chi.Router) {
 	r.Get("/profile" , ur.userController.GetUserById)
-	r.Post("/signup" , middlewares.ValidateRequestBody[dtos.CreateUserRequest](ur.userController.Create))
-	r.Post("/login" , middlewares.ValidateRequestBody[dtos.LoginUserRequest](ur.userController.LoginUser))
+	r.With(middlewares.ValidateRequestBody[dtos.CreateUserRequest]).Post("/signup" , ur.userController.Create)
+	r.With(middlewares.ValidateRequestBody[dtos.LoginUserRequest]).Post("/login" , ur.userController.LoginUser)
 }

@@ -6,6 +6,7 @@ import (
 	"AuthInGo/dtos"
 	"AuthInGo/models"
 	"AuthInGo/utils"
+	"errors"
 	"fmt"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -103,7 +104,7 @@ func (us *UserServiceImpl) LoginUser(payload *dtos.LoginUserRequest) (string , e
 
 	if !isPasswordValid {
 		fmt.Println("Password valid :" , isPasswordValid)
-		return "" ,nil
+		return "" , errors.ErrUnsupported
 	}
 
 	key := []byte(env.GetString("JWT_SECRET" , "TOKEN"))
