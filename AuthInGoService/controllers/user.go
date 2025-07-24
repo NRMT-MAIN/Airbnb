@@ -21,6 +21,13 @@ func NewUserController(_userService services.UserService) *UserController{
 func (uc *UserController) GetUserById(w http.ResponseWriter , r *http.Request){
 	fmt.Println("Register User called in User Controller.")
 	userId := r.URL.Query().Get("id")
+	if userId == "" {
+		userId = r.Context().Value("userId").(string) 
+	}
+
+	fmt.Println("User ID from context or query:", userId)
+
+
 	user , err := uc.userService.GetUserById(userId)
 
 	if err != nil {

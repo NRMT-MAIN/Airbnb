@@ -109,12 +109,12 @@ func (us *UserServiceImpl) LoginUser(payload *dtos.LoginUserRequest) (string , e
 
 	key := []byte(env.GetString("JWT_SECRET" , "TOKEN"))
 
-	jwtPayload := jwt.MapClaims{
+	JwtPayload := jwt.MapClaims{
 		"email" : user.Email , 
 		"id" : user.Id ,
 	}
 	
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256 , jwtPayload)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256 , JwtPayload)
 
 	tokenString , err := token.SignedString(key)
 	if err != nil{
