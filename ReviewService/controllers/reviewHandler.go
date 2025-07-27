@@ -6,6 +6,8 @@ import (
 	"reviewservice/dtos"
 	"reviewservice/services"
 	"reviewservice/utils"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type ReviewController struct {
@@ -36,4 +38,37 @@ func (rc *ReviewController) CreateReview(w http.ResponseWriter , r *http.Request
 	}
 
 	utils.WriteSuccessJsonResponse(w , "Review Created!" , http.StatusCreated , review)
+}
+
+func (rc *ReviewController) GetAllReviews(w http.ResponseWriter , r *http.Request){
+	reviews , err := rc.ReviewService.GetAllReviews()
+
+	if err != nil {
+		utils.WriteErrorJsonResponse(w , "Error in getting reviews" , http.StatusInternalServerError  , err)
+		return
+	}
+	utils.WriteSuccessJsonResponse(w , "Reviews fetched successfully!" , http.StatusOK , reviews)
+}
+
+func (rc *ReviewController) GetByIdReview(w http.ResponseWriter , r *http.Request){
+	id := chi.URLParam(r , "id")
+	review , err := rc.ReviewService.GetByIdReview(id)
+
+	if err != nil {
+		utils.WriteErrorJsonResponse(w , "Error in getting review" , http.StatusInternalServerError  , err)
+		return
+	}
+	utils.WriteSuccessJsonResponse(w , "Review fetched successfully!" , http.StatusOK , review)
+}
+
+
+func (rc *ReviewController) DeleteById(w http.ResponseWriter , r *http.Request) {
+	id := chi.URLParam(r , "id")
+	err := rc.ReviewService.DeleteByIdReview(id)
+
+	if err != nil {
+		utils.WriteErrorJsonResponse(w , "Error in deleting review" , http.StatusInternalServerError  , err)
+		return
+	}
+	utils.WriteSuccessJsonResponse(w , "Review deleted successfully!" , http.StatusOK ,"Deleted")
 }
