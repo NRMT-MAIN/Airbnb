@@ -23,4 +23,3 @@ func SetupRouter(UserRouter Router) *chi.Mux{
 
 	return chiRouter
 }
-//https://fakestoreapi.in/api/products 

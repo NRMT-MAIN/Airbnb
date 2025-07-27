@@ -1,0 +1,16 @@
+-- +goose Up
+-- +goose StatementBegin
+CREATE TABLE REVIEW(
+    ID INT AUTO_INCREMENT PRIMARY KEY , 
+    BOOKING_ID INT NOT NULL , 
+    COMMENT TEXT , 
+    RATING ENUM('1', '2', '3', '4', '5'), 
+    CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP , 
+    UPDATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+-- +goose StatementEnd
+
+-- +goose Down
+-- +goose StatementBegin
+DROP TABLE REVIEW;
+-- +goose StatementEnd
