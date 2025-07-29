@@ -9,8 +9,8 @@ import (
 
 type ReviewService interface {
 	CreateReview(payload *dtos.CreateReviewDTO) (*models.Review , error)
-	GetAllReviews() ([]*models.SingleReview , error)
-	GetByIdReview(id string) (*models.SingleReview , error)
+	GetAllReviews() ([]*models.Review , error)
+	GetByIdReview(id string) (*models.Review , error)
 	DeleteByIdReview(id string) error
 }
 
@@ -35,7 +35,7 @@ func (rs *ReviewServiceImpl) CreateReview(payload *dtos.CreateReviewDTO) (*model
 	return review , nil 
 }
 
-func (rs *ReviewServiceImpl) GetAllReviews() ([]*models.SingleReview , error) {
+func (rs *ReviewServiceImpl) GetAllReviews() ([]*models.Review , error) {
 	reviews , err := rs.ReviewRepositorty.GetAll()
 
 	if err != nil {
@@ -46,7 +46,7 @@ func (rs *ReviewServiceImpl) GetAllReviews() ([]*models.SingleReview , error) {
 	return reviews , nil 
 }
 
-func (rs *ReviewServiceImpl) GetByIdReview(id string) (*models.SingleReview , error) {
+func (rs *ReviewServiceImpl) GetByIdReview(id string) (*models.Review , error) {
 	review , err := rs.ReviewRepositorty.GetById(id)
 
 	if err != nil {

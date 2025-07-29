@@ -10,8 +10,8 @@ import (
 
 type ReviewRepositorty interface {
 	Create(payload *dtos.CreateReviewDTO) (*models.Review , error)
-	GetAll() ([]*models.SingleReview , error)
-	GetById(id string) (*models.SingleReview , error)
+	GetAll() ([]*models.Review , error)
+	GetById(id string) (*models.Review , error)
 	DeleteById(id string) error
 }
 
@@ -47,12 +47,12 @@ func (r *ReviewRepositortyImpl) DeleteById(id string) error {
 	return nil
 }
 
-func (r *ReviewRepositortyImpl) GetById(id string) (*models.SingleReview , error) {
+func (r *ReviewRepositortyImpl) GetById(id string) (*models.Review , error) {
 	query := "SELECT * FROM REVIEW WHERE ID = ?"
 
 	row := r.db.QueryRow(query , id)
 
-	review := &models.SingleReview{}
+	review := &models.Review{}
 	err := row.Scan(&review.ID , &review.BookingID , &review.Comment , &review.Rating , &review.Created_At , &review.Updated_At)
 
 	if err != nil {
@@ -68,7 +68,7 @@ func (r *ReviewRepositortyImpl) GetById(id string) (*models.SingleReview , error
 	return review , nil	
 }
 
-func (r *ReviewRepositortyImpl) GetAll() ([]*models.SingleReview , error){
+func (r *ReviewRepositortyImpl) GetAll() ([]*models.Review , error){
 	query := "SELECT * FROM REVIEW;"
 
 	rows , err := r.db.Query(query)
@@ -80,10 +80,10 @@ func (r *ReviewRepositortyImpl) GetAll() ([]*models.SingleReview , error){
 
 	defer rows.Close()
 
-	var results []*models.SingleReview
+	var results []*models.Review
 
 	for rows.Next() {
-		review :=  &models.SingleReview{}
+		review :=  &models.Review{}
 		err := rows.Scan(&review.ID , &review.BookingID , &review.Comment , &review.Rating , &review.Created_At , &review.Updated_At)
 
 		if err != nil {
@@ -120,10 +120,12 @@ func (r *ReviewRepositortyImpl) Create(payload *dtos.CreateReviewDTO) (*models.R
 	bookingid , _ := strconv.Atoi(payload.BookingID)
 
 	review := &models.Review{
-		ID: int(lastEnteredId),
+		ID: lastEnteredId,
 		BookingID: bookingid,
 		Comment: payload.Comment,
 		Rating: payload.Rating,
+		Created_At: "",
+		Updated_At: "",
 	}
 
 	fmt.Println("Review Created Succesfully!") ; 
