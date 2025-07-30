@@ -11,9 +11,9 @@ type RoleService interface {
 	GetRoleById(id int64) (*models.Role, error)
 	GetRoleByName(name string) (*models.Role, error)
 	GetAllRoles() ([]*models.Role, error)
-	CreateRole(payload *dtos.CreateRoleRequest) (*models.Role, error)
+	CreateRole(payload *dtos.CreateRoleRequestDTO) (*models.Role, error)
 	DeleteRoleById(id int64) error
-	UpdateRoleById(id int64, payload *dtos.CreateRoleRequest) (*models.Role, error)
+	UpdateRoleById(id int64, payload *dtos.CreateRoleRequestDTO) (*models.Role, error)
 }
 
 type RoleServiceImpl struct {
@@ -56,7 +56,7 @@ func (rs *RoleServiceImpl) GetAllRoles() ([]*models.Role , error) {
 	return role , nil 
 }
 
-func (rs *RoleServiceImpl) CreateRole(payload *dtos.CreateRoleRequest) (*models.Role , error) {
+func (rs *RoleServiceImpl) CreateRole(payload *dtos.CreateRoleRequestDTO) (*models.Role , error) {
 	role , err := rs.roleRepository.Create(payload)
 
 	if err != nil {
@@ -75,7 +75,7 @@ func (rs *RoleServiceImpl) DeleteRoleById(id int64) error {
 	return nil 
 }
 
-func (rs *RoleServiceImpl) UpdateRoleById(id int64, payload *dtos.CreateRoleRequest) (*models.Role, error) {
+func (rs *RoleServiceImpl) UpdateRoleById(id int64, payload *dtos.CreateRoleRequestDTO) (*models.Role, error) {
 	role , err := rs.roleRepository.UpdateById(id , payload)
 	if err != nil {
 		fmt.Println("Error in updating role in role service" , err)

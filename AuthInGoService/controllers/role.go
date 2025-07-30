@@ -58,7 +58,7 @@ func (rc *RoleController) GetRoleByName(w http.ResponseWriter , r *http.Request)
 }
 
 func (rc *RoleController) CreateRole(w http.ResponseWriter  , r *http.Request) {
-	var payload *dtos.CreateRoleRequest
+	var payload *dtos.CreateRoleRequestDTO
 
 	err := utils.ReadJsonBody(r , &payload)
 	if err != nil {
@@ -92,7 +92,7 @@ func (rc *RoleController) DeleteById(w http.ResponseWriter , r *http.Request) {
 func (rc *RoleController) UpdateById(w http.ResponseWriter , r *http.Request) {
 	id := chi.URLParam(r , "id")
 
-	var payload *dtos.CreateRoleRequest
+	var payload *dtos.CreateRoleRequestDTO
 
 	err := utils.ReadJsonBody(r , &payload)
 	if err != nil {

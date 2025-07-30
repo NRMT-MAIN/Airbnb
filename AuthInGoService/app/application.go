@@ -46,20 +46,23 @@ func (app *Application) Run() error {
 		return err
 	}
 
-
 	ur := db.NewUserRepository(repo)
 	rr := db.NewRoleRepository(repo)
+	pr := db.NewPermissionRepository(repo)
 	us := services.NewUserService(ur)
 	rs := services.NewRoleService(rr)
+	ps := services.NewPermissionService(pr)
 	uc := controllers.NewUserController(us)
 	rc := controllers.NewRoleController(rs)
+	pc := controllers.NewPermissionController(ps)
 	uRouter := routers.NewUserRouter(uc)
 	rRouter := routers.NewRoleRouter(rc)
+	pRouter := routers.NewPermissionRouter(pc)
 
 
 	server := &http.Server{
 		Addr: app.Config.Addr,
-		Handler: routers.SetupRouter(uRouter , rRouter),
+		Handler: routers.SetupRouter(uRouter , rRouter , pRouter),
 		ReadTimeout: 10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
@@ -67,3 +70,5 @@ func (app *Application) Run() error {
 
 	return server.ListenAndServe() ; 
 }
+
+

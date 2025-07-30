@@ -12,9 +12,9 @@ type RoleRepository interface {
 	GetById(id int64) (*models.Role , error)
 	GetByName(name string) (*models.Role , error)
 	GetAll() ([]*models.Role , error)
-	Create(payload *dtos.CreateRoleRequest) (*models.Role , error)
+	Create(payload *dtos.CreateRoleRequestDTO) (*models.Role , error)
 	DeleteById(id int64) error 
-	UpdateById(id int64 , payload *dtos.CreateRoleRequest) (*models.Role , error)
+	UpdateById(id int64 , payload *dtos.CreateRoleRequestDTO) (*models.Role , error)
 }
 
 type RoleRepositoryImpl struct {
@@ -96,7 +96,7 @@ func (r *RoleRepositoryImpl) GetAll() ([]*models.Role , error) {
 	return roles , nil
 }
 
-func (r *RoleRepositoryImpl) Create(payload *dtos.CreateRoleRequest) (*models.Role , error) {
+func (r *RoleRepositoryImpl) Create(payload *dtos.CreateRoleRequestDTO) (*models.Role , error) {
 	query := "INSERT INTO ROLE ( NAME , DESCRIPTION ) VALUES ( ? , ?) ;"
 
 	result , err := r.db.Exec(query , payload.Name , payload.Description)
@@ -153,7 +153,7 @@ func (r *RoleRepositoryImpl) DeleteById(id int64) error {
 	return nil 
 }
 
-func (r *RoleRepositoryImpl) UpdateById(id int64 , payload *dtos.CreateRoleRequest) (*models.Role , error){
+func (r *RoleRepositoryImpl) UpdateById(id int64 , payload *dtos.CreateRoleRequestDTO) (*models.Role , error){
 	query := "UPDATE role SET name = COALESCE(?, name), description = COALESCE(?, description) WHERE id = ?"
 	result , err := r.db.Exec(query, payload.Name , payload.Description , id)
 
