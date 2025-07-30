@@ -55,7 +55,7 @@ func (u *UserRepositoryImpl) GetByEmail(email string) (*models.User , error){
 	err := row.Scan(&user.Id , &user.Username , &user.Email , &user.Password , &user.CreatedAt , &user.UpdatedAt)
 
 	if err != nil {
-		if err != sql.ErrNoRows {
+		if err == sql.ErrNoRows {
 			fmt.Println("No Records Found!")
 			return nil , err
 		} else {
@@ -136,7 +136,7 @@ func (u *UserRepositoryImpl) GetById(id string)(*models.User , error){
 	err := row.Scan(&user.Id , &user.Username , &user.Email , &user.Password , &user.CreatedAt , &user.UpdatedAt)
 
 	if err != nil {
-		if err != sql.ErrNoRows {
+		if err == sql.ErrNoRows {
 			fmt.Println("No Records Found!")
 			return nil , err
 		} else {

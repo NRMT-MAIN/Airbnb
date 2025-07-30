@@ -57,6 +57,7 @@ func (us *UserServiceImpl) CreateUser(payload *dtos.CreateUserRequest) (*models.
 	
 	if err != nil {
 		fmt.Println("Error in getting hashed password")
+		return nil , err
 	}
 	
 	user , err := us.userRepository.Create(payload.Username , payload.Email , hashPassword)

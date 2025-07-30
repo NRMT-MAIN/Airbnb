@@ -14,5 +14,5 @@ CREATE TABLE IF NOT EXISTS USER_ROLE(
 
 -- +goose Down
 -- +goose StatementBegin
-SELECT 'down SQL query';
+DROP TABLE IF EXISTS USER_ROLE ; 
 -- +goose StatementEnd
