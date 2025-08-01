@@ -19,7 +19,7 @@ func NewUserRouter(_userController *controllers.UserController) Router {
 }
 
 func (ur *UserRouter) Register(r chi.Router) {
-	r.With(middlewares.JWTMiddleware).Get("/profile" , ur.userController.GetUserById)
+	r.With(middlewares.JWTMiddleware , middlewares.RequireAnyRoles("user" , "admin")).Get("/profile" , ur.userController.GetUserById)
 	r.With(middlewares.ValidateRequestBody[dtos.CreateUserRequest]).Post("/signup" , ur.userController.Create)
 	r.With(middlewares.ValidateRequestBody[dtos.LoginUserRequest]).Post("/login" , ur.userController.LoginUser)
 }

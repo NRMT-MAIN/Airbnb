@@ -1,7 +1,9 @@
 package middlewares
 
 import (
+	config "AuthInGo/config/db"
 	env "AuthInGo/config/env"
+	db "AuthInGo/db/repositories"
 	"context"
 	"net/http"
 	"strconv"
@@ -53,4 +55,54 @@ func JWTMiddleware(next http.Handler) http.Handler{
 		ctx = context.WithValue(ctx , "email" , email)
 		next.ServeHTTP(w , r.WithContext(ctx))
 	})
+}
+
+func RequireAllRoles(roles ...string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			userId := r.Context().Value("userId").(string)
+
+			userIdInt , _ := strconv.Atoi(userId)
+
+			urr := db.NewUserRoleRepository(config.DB)
+
+			hasAllRole , err :=  urr.HasAllRoles(int64(userIdInt) , roles)
+
+			if err != nil {
+				http.Error(w, "Error checking user roles: "+ err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if !hasAllRole {
+				http.Error(w, "Forbidden: You do not have the required roles", http.StatusForbidden)
+				return
+			}
+			next.ServeHTTP(w , r)
+		})
+	}
+}
+
+func RequireAnyRoles(roles ...string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			userId := r.Context().Value("userId").(string)
+
+			userIdInt , _ := strconv.Atoi(userId)
+
+			urr := db.NewUserRoleRepository(config.DB)
+
+			hasAllRole , err :=  urr.HasAnyRole(int64(userIdInt) , roles)
+
+			if err != nil {
+				http.Error(w, "Error checking user roles: "+ err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if !hasAllRole {
+				http.Error(w, "Forbidden: You do not have the required roles", http.StatusForbidden)
+				return
+			}
+			next.ServeHTTP(w , r)
+		})
+	}
 }

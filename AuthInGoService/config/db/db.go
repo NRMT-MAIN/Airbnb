@@ -8,7 +8,19 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
-func SetupDB() (*sql.DB , error){
+var DB *sql.DB
+
+func InitDB(){
+	var err error
+	DB , err = setupDB()
+
+	if err != nil {
+		fmt.Println("Error setting up DB connection" , err)
+		return
+	}
+}
+
+func setupDB() (*sql.DB , error){
 	cfg := mysql.NewConfig()
 
 	cfg.User = config.GetString("DB_USER" , "root")

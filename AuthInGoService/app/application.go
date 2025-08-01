@@ -39,18 +39,15 @@ func NewApplication(cfg Config) Application {
 }
 
 func (app *Application) Run() error {
-	repo , err := dbconfig.SetupDB()
-
-	if err != nil {
-		fmt.Println("Error setting up DB connection" , err)
-		return err
-	}
+	repo := dbconfig.DB
 
 	ur := db.NewUserRepository(repo)
 	rr := db.NewRoleRepository(repo)
 	pr := db.NewPermissionRepository(repo)
+	rpr := db.NewRolePermissionRepository(repo)
+	urr := db.NewUserRoleRepository(repo)
 	us := services.NewUserService(ur)
-	rs := services.NewRoleService(rr)
+	rs := services.NewRoleService(rr , rpr , urr)
 	ps := services.NewPermissionService(pr)
 	uc := controllers.NewUserController(us)
 	rc := controllers.NewRoleController(rs)

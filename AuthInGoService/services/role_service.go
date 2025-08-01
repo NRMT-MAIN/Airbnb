@@ -14,15 +14,24 @@ type RoleService interface {
 	CreateRole(payload *dtos.CreateRoleRequestDTO) (*models.Role, error)
 	DeleteRoleById(id int64) error
 	UpdateRoleById(id int64, payload *dtos.CreateRoleRequestDTO) (*models.Role, error)
+	GetRolePermissions(roleId int64) ([]*models.RolePermission, error)
+	AddPermissionToRole(roleId int64, permissionId int64) (*models.RolePermission, error)
+	RemovePermissionFromRole(roleId int64, permissionId int64) error
+	GetAllRolePermissions() ([]*models.RolePermission, error)
+	AssignRoleToUser(userId int64, roleId int64) error
 }
 
 type RoleServiceImpl struct {
-	roleRepository db.RoleRepository
+	roleRepository           db.RoleRepository
+	rolePermissionRepository db.RolePermissionRepository
+	userRoleRepository       db.UserRoleRepository
 }
 
-func NewRoleService(_roleRepository db.RoleRepository) RoleService {
+func NewRoleService(roleRepo db.RoleRepository, rolePermissionRepo db.RolePermissionRepository, userRoleRepo db.UserRoleRepository) RoleService {
 	return &RoleServiceImpl{
-		roleRepository : _roleRepository , 
+		roleRepository:           roleRepo,
+		rolePermissionRepository: rolePermissionRepo,
+		userRoleRepository:       userRoleRepo,
 	}
 }
 
@@ -84,3 +93,22 @@ func (rs *RoleServiceImpl) UpdateRoleById(id int64, payload *dtos.CreateRoleRequ
 	return role , nil
 }
 
+func (rs *RoleServiceImpl) GetRolePermissions(roleId int64) ([]*models.RolePermission, error) {
+	return rs.rolePermissionRepository.GetRolePermissionByRoleId(roleId)
+}
+
+func (rs *RoleServiceImpl) AddPermissionToRole(roleId int64, permissionId int64) (*models.RolePermission, error) {
+	return rs.rolePermissionRepository.AddPermissionToRole(roleId, permissionId)
+}
+
+func (rs *RoleServiceImpl) RemovePermissionFromRole(roleId int64, permissionId int64) error {
+	return rs.rolePermissionRepository.RemovePermissionFromRole(roleId, permissionId)
+}
+
+func (rs *RoleServiceImpl) GetAllRolePermissions() ([]*models.RolePermission, error) {
+	return rs.rolePermissionRepository.GetAllRolePermissions()
+}
+
+func (rs *RoleServiceImpl) AssignRoleToUser(userId int64, roleId int64) error {
+	return rs.userRoleRepository.AssignRoleToUser(userId, roleId)
+}

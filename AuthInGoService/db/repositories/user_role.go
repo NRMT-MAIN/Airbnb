@@ -22,7 +22,7 @@ type UserRoleRepositoryImpl struct {
 	db *sql.DB
 }
 
-func NewUserRole(_db *sql.DB) UserRoleRepository {
+func NewUserRoleRepository(_db *sql.DB) UserRoleRepository {
 	return &UserRoleRepositoryImpl{
 		db : _db ,
 	}
@@ -157,14 +157,23 @@ func (u *UserRoleRepositoryImpl) HasAllRoles(userId int64, roleNames []string) (
 	if len(roleNames) == 0 {
 		return true , nil 
 	}
+
+	placeholders := make([]string , len(roleNames))
+	args := make([]interface{} , len(roleNames) + 2)
+	args[0] = len(roleNames)
+	args[1] = userId
+
+	for i , value := range roleNames {
+		placeholders[i] = "?"
+		args[i + 2] = value
+	}
+
 	query := `SELECT COUNT(*) = ?
 				FROM USER_ROLE UR
 				INNER JOIN ROLE R ON R.ID = UR.ROLE_ID
-				WHERE UR.USER_ID = ? R.NAME IN (?) ;`
-	
-	roleNamesString := strings.Join(roleNames , ",")
+				WHERE UR.USER_ID = ? AND R.NAME IN (` + strings.Join(placeholders , ",") + `) ;`
 	var exists bool 
-	err := u.db.QueryRow(query , len(roleNames) , userId , roleNamesString).Scan(&exists)
+	err := u.db.QueryRow(query , args...).Scan(&exists)
 
 	if err != nil {
 		fmt.Println("Error in quering" , err)
@@ -177,14 +186,21 @@ func (u *UserRoleRepositoryImpl) HasAnyRole(userId int64 , roleNames []string) (
 	if len(roleNames) == 0 {
 		return true , nil 
 	}
-	query := `SELECT COUNT(*) > 0
+	placeholders := make([]string, len(roleNames))
+	args := make([]interface{}, len(roleNames)+1)
+	args[0] = userId
+		
+	for i, name := range roleNames {
+		placeholders[i] = "?"
+		args[i+1] = name
+	}
+
+	query := `SELECT COUNT(*) > 0 
 				FROM USER_ROLE UR
 				INNER JOIN ROLE R ON R.ID = UR.ROLE_ID
-				WHERE UR.USER_ID = ? R.NAME IN (?) ;`
-	
-	roleNamesString := strings.Join(roleNames , ",")
+				WHERE UR.USER_ID = ? AND R.NAME IN (` + strings.Join(placeholders, ",") + `)`
 	var exists bool 
-	err := u.db.QueryRow(query , userId , roleNamesString).Scan(&exists)
+	err := u.db.QueryRow(query , args...).Scan(&exists)
 
 	if err != nil {
 		fmt.Println("Error in quering" , err)

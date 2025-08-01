@@ -8,9 +8,9 @@ import (
 
 func main(){
 	config.Load() 
-	dbConfig.SetupDB()
 
 	cfg := app.NewConfig()
+	dbConfig.InitDB()
 
 	app := app.NewApplication(cfg)
 	app.Run() ; 
