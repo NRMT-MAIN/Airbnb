@@ -1,4 +1,4 @@
-import { CreationOptional, InferAttributes, InferCreationAttributes, Model } from "sequelize";
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import sequelize from "./sequelize";
 import Hotel from "./hotel.model";
 
@@ -9,7 +9,7 @@ export enum RoomType {
   DELUXE = 'DELUXE',
 }
 
-class RoomCategory extends Model< InferAttributes<RoomCategory>, InferCreationAttributes<RoomCategory>> {
+class RoomCategory extends Model<InferAttributes<RoomCategory>, InferCreationAttributes<RoomCategory>> {
   declare id: CreationOptional<number>;
   declare hotel_id: number;
   declare price: number;
@@ -23,12 +23,12 @@ class RoomCategory extends Model< InferAttributes<RoomCategory>, InferCreationAt
 RoomCategory.init(
   {
     id: {
-      type: 'INTEGER',
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
     hotel_id: {
-      type: 'INTEGER',
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: Hotel,
@@ -36,34 +36,37 @@ RoomCategory.init(
       },
     },
     price: {
-      type: 'INTEGER',
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     roomType: {
-      type: 'ENUM',
-      values: [...Object.values(RoomType)],
+      type: DataTypes.ENUM(...Object.values(RoomType)),
+      allowNull: false,
     },
     roomCount: {
-      type: 'INTEGER',
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     created_at: {
-      type: 'DATE',
-      defaultValue: new Date(),
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
     },
     updated_at: {
-      type: 'DATE',
-      defaultValue: new Date(),
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
     },
     deleted_at: {
-      type: 'DATE',
-      defaultValue: null,
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   },
   {
     tableName: 'roomcategory',
     sequelize: sequelize,
     timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    deletedAt: 'deleted_at',
   }
 );
 
