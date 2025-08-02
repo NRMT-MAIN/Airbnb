@@ -5,6 +5,7 @@ import { appErrorHandeler, genericErrorHandeler } from "./middleware/error.middl
 import logger from "./config/logger.config";
 import { attachCorrelationIdMiddleware } from "./middleware/correlation.middleware";
 import sequelize from "./db/models/sequelize";
+import { setupRoomGeneratorWorker } from "./processors/roomGeneration.processor";
 
 
 const app = express() ; 
@@ -19,6 +20,7 @@ app.use(genericErrorHandeler) ;
 app.listen(serverConfig.PORT , async () => {
     console.log("Server is running at Port : " + serverConfig.PORT) ; 
     logger.info("To exit press Ctrl + C" , {"hello":"hjk"}) ; 
+    setupRoomGeneratorWorker() ;
 
     try {
         await sequelize.authenticate() ; // Test the connection to the database

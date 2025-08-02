@@ -2,7 +2,9 @@ import dotenv from "dotenv"
 
 type ServerConfig = {
     PORT : number , 
-    NODE_ENV : string
+    NODE_ENV : string , 
+    REDIS_HOST : string , 
+    REDIS_PORT : number 
 }
 
 type DBConfig = {
@@ -20,7 +22,9 @@ loadConfig() ;
 
 export const serverConfig : ServerConfig = {
     PORT : Number(process.env.PORT) || 3000 , 
-    NODE_ENV : process.env.NODE_ENV || "development"
+    NODE_ENV : process.env.NODE_ENV || "development" , 
+    REDIS_HOST : process.env.REDIS_HOST || "localhost" , 
+    REDIS_PORT : Number(process.env.REDIS_PORT) || 6379
 }
 
 export const dbConfig: DBConfig = {
