@@ -1,10 +1,12 @@
 import * as cron from 'node-cron';
-import { RoomGenerationJob } from '../dto/roomGeneration.dto';
+import { RoomGenerationJob, RoomGenerationRequest } from '../dto/roomGeneration.dto';
 import logger from '../config/logger.config';
 import { serverConfig } from '../config';
 import RoomRepository from '../repositories/room.repository';
 import RoomCategoryRepository from '../repositories/roomcategory.repository';
 import { addRoomsToQueue } from '../producers/roomGeneration.producer';
+import { ForbiddenError, NotFoundError } from '../utils/Error/app.error';
+import { z } from 'zod';
 
 const roomRepository = new RoomRepository();
 const roomCategoryRepository = new RoomCategoryRepository();
@@ -126,3 +128,51 @@ export const manualExtendAvailability = async (): Promise<void> => {
     logger.info('Manual room availability extension triggered');
     await extendRoomAvailability();
 }; 
+
+export const scheduledRoomGeneration = async (categoryData: RoomGenerationRequest) => {
+    const roomCategory = await roomCategoryRepository.findById(categoryData.roomCategoryId);
+    if (!roomCategory) {
+        logger.warn(`Room category ${categoryData.roomCategoryId} not found, skipping extension`);
+        throw new NotFoundError("Category Id not found");
+    }
+
+    const jobData: RoomGenerationJob = {
+        roomCategoryId: categoryData.roomCategoryId,
+        startDate: categoryData.startDate,
+        endDate: categoryData.endDate,
+        priceOverride: categoryData.priceOveride || roomCategory.price,
+        batchSize: Number(process.env.BATCH_SIZE) || 100,
+    };
+
+    console.log(categoryData.scheduledAt)
+
+    
+
+    const scheduledTime = categoryData.scheduledAt? new Date(categoryData.scheduledAt) : new Date(Date.now() + 60000);
+
+
+    if (scheduledTime.getTime() < Date.now()) {
+        logger.warn("Scheduled time is in the past");
+        throw new ForbiddenError("Scheduled At cannot be at past")
+    } 
+    
+    const dateToCron = (date: Date): string => {
+        return [
+            date.getUTCMinutes(), 
+            date.getUTCHours(),    
+            date.getUTCDate(),     
+            date.getUTCMonth() + 1,
+            date.getUTCDay()     
+        ].join(' ');
+    };
+
+    const cronExpression = dateToCron(scheduledTime);
+
+    const job = cron.schedule(cronExpression, async () => {
+        await addRoomsToQueue(jobData);
+        logger.info("Room generation job executed at:");
+    });
+
+    logger.info(`Scheduled room generation for cron: ${cronExpression}`);
+    return job; 
+};

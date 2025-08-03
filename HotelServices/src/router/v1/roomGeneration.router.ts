@@ -6,7 +6,7 @@ import { RoomGenerationJobSchema, RoomGenerationRequestSchema } from "../../dto/
 const roomGenerationRouter = express.Router()
 
 
-roomGenerationRouter.post("/" , validateRequestBody(RoomGenerationJobSchema) ,  roomGenerationHandeler)
+roomGenerationRouter.post("/" , validateRequestBody(RoomGenerationRequestSchema) ,  roomGenerationHandeler)
 
 
 export default roomGenerationRouter ; 

@@ -5,6 +5,7 @@ import { RG_PRODUCER } from "../producers/roomGeneration.producer"
 import { NotFoundError } from "../utils/Error/app.error"
 import { getRedisConObject } from "../config/redis.config"
 import { generateRooms } from "../services/roomGeneration.service"
+import { error } from "console"
 
 
 export const setupRoomGeneratorWorker = () => {
