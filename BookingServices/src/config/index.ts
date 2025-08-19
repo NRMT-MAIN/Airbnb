@@ -3,7 +3,8 @@ import dotenv from "dotenv"
 type ServerConfig = {
     PORT : number , 
     REDIS_SERVER : string , 
-    TTL : number
+    TTL : number , 
+    HOTEL_SERVICE_API : string
 }
 
 type DBConfig = {
@@ -23,7 +24,8 @@ loadEnv() ;
 export const serverConfig : ServerConfig = {
     PORT : Number(process.env.PORT) || 3001 , 
     REDIS_SERVER : process.env.REDIS_SERVER || "redis://localhost:6379" , 
-    TTL : Number(process.env.TTL) || 10000
+    TTL : Number(process.env.TTL) || 10000 , 
+    HOTEL_SERVICE_API : process.env.HOTEL_SERVICE_API || "http://localhost:3000/api/v1/"
 }
 
 export const dbConfig : DBConfig = {

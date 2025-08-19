@@ -7,10 +7,26 @@ import { generateIdompotencyKey } from "../utils/Helper/generateIdompotencyKey";
 import { serverConfig } from "../config";
 import { redLock } from "../config/redis.config";
 import logger from "../config/logger.config";
+import { getAvailableRoom } from "../api/hotel.api";
 
 export async function createBookingService(bookingInput : CreateBookingDTO){
     const ttl = serverConfig.TTL ; 
     const bookingResource = `hotel:${bookingInput.hotelId}` ; 
+
+    const availableRoom = await getAvailableRoom(
+        bookingInput.roomCategoryId , 
+        bookingInput.checkInDate , 
+        bookingInput.checkOutDate
+    )
+
+    const checkOutDate = new Date(bookingInput.checkOutDate) ; 
+    const checkInDate = new Date(bookingInput.checkInDate) ; 
+
+    const totalNights = Math.ceil(checkOutDate.getTime() - checkInDate.getTime() / (24 * 60 * 60 * 1000) ) ; 
+
+    if(availableRoom.data.length == 0 || availableRoom.data.length < totalNights){
+        throw new BadRequestError("No Rooms Available!")
+    }
 
     try {
         await redLock.acquire([bookingResource] , ttl) ; 

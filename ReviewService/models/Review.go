@@ -8,4 +8,3 @@ type Review struct {
 	Updated_At string
 	Created_At string   
 }
-

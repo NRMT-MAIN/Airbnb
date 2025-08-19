@@ -1,6 +1,7 @@
-import { CreationAttributes } from "sequelize";
+import { CreationAttributes, Op } from "sequelize";
 import Rooms from "../db/models/rooms.model";
 import BaseRepository from "./base.repository";
+import { RoomAvailableDTO } from "../dto/roomGeneration.dto";
 
 class RoomRepository extends BaseRepository<Rooms>{
     constructor(){
@@ -52,6 +53,31 @@ class RoomRepository extends BaseRepository<Rooms>{
             latestDate: new Date(result.latestDate)
         }));
     }
+
+    async findRoomByIdAndDateRange(
+        roomCategoryId : number , 
+        roomNo : number[] , 
+        checkInDate : Date , 
+        checkOutDate : Date
+    ) : Promise<Rooms[]> {
+        const result = await this.model.findAll({
+            where : {
+                room_category_id : roomCategoryId , 
+                booking_id : null , 
+                date_of_availability : {
+                    [Op.between] : [checkInDate , checkOutDate]
+                },
+                room_no : {
+                    [Op.in] : roomNo
+                }
+            }
+        })
+        return result ; 
+    }
+
+    // async updateRoomBookingByRoomNo(
+        
+    // )
 }
 
 export default RoomRepository ; 

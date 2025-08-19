@@ -131,3 +131,5 @@ func (r *ReviewRepositortyImpl) Create(payload *dtos.CreateReviewDTO) (*models.R
 	fmt.Println("Review Created Succesfully!") ; 
 	return review , nil
 }
+
+func (r *ReviewRepositortyImpl) GetHotelReview()()

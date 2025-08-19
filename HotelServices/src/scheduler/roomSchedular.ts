@@ -6,7 +6,6 @@ import RoomRepository from '../repositories/room.repository';
 import RoomCategoryRepository from '../repositories/roomcategory.repository';
 import { addRoomsToQueue } from '../producers/roomGeneration.producer';
 import { ForbiddenError, NotFoundError } from '../utils/Error/app.error';
-import { z } from 'zod';
 
 const roomRepository = new RoomRepository();
 const roomCategoryRepository = new RoomCategoryRepository();
